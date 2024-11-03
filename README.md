@@ -44,16 +44,18 @@ SELECT COUNT(DISTINCT vehicle_id) FROM cabs;
 Ejercicio 2
 Lista de las compañías con menos de 100 automóviles. La solicitud que te ayudó a resolver la tarea:
 
+```sql
     SELECT COUNT(DISTINCT vehicle_id) AS cnt, company_name 
     FROM cabs 
     GROUP BY company_name 
     HAVING COUNT(DISTINCT cab_id) < 100 
     ORDER BY cnt DESC;
-
+```
 
 Ejercicio 3
 La tabla con los datos para el periodo especificado. Poner una estampa en las fechas de acuerdo a su clima registrado, en un periodo específico. La solicitud que utilizaste para resolver la tarea:
 
+```sql
     SELECT ts, CASE
         WHEN description LIKE '%rain%' THEN 'Bad' 
         WHEN description LIKE '%storm%' THEN 'Bad' 
@@ -61,14 +63,16 @@ La tabla con los datos para el periodo especificado. Poner una estampa en las fe
     END AS Weather_Conditions  
     FROM weather_records 
     WHERE ts BETWEEN '2017-11-05 00:00:00' AND '2017-11-06 00:00:00';
-
+```
 
 Ejercicio 4
 La tabla con datos para contar los viajes de una compañía en un período específico. La solicitud que utilizaste para resolver la tarea:
-    
+   
+```sql 
     SELECT cabs.company_name, COUNT(DISTINCT trips.trip_id) AS trips_amount 
     FROM trips 
     JOIN cabs ON cabs.cab_id = trips.cab_id 
     WHERE CAST(trips.start_ts AS date) BETWEEN '2017-11-15' AND '2017-11-16' 
     GROUP BY cabs.company_name 
     ORDER BY trips_amount DESC;
+```
