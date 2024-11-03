@@ -1,0 +1,124 @@
+## Un JOIN busca coincidencias y muestra los resultados lado a lado.
+## Una sobconsulta filtra todas las necesidades para mostrar en una sola tabla.
+
+## =============== SUBCONSULTA ANIDADA =============== ##
+
+1) Subconsulta normal (más compleja), filtras la informacion que necesitas de la otra tabla.
+	Cada filtrado necesitará una subconsulta. Primero filtra y despues procesa y une a la consulta padre.
+
+2) Vamos de abajo para arriba, empezando con las que van en paréntesis.
+
+SELECT clientes.nombre, pedidos.total
+FROM clientes 
+JOIN (
+
+	SELECT cliente_id_PK
+	FROM pedidos
+	WHERE pedidos.total = 200
+	AND fecha BETWEEN '2023-01-01' AND '2023-12-31'
+
+	) AS subquery ON subquery.cliente_id = clientes.cliente_id
+
+WHERE clientes.ciudad = 'Madrid' 
+
+
+## ==================== EJEMPLO =========================== ##
+
+SELECT *
+FROM products 
+JOIN (
+	SELECT product_id
+	FROM stocks
+	WHERE quantity > 25
+	) AS subquery ON subquery.product_id = products.product_id;
+
+
+## ==================== USANDO IN =========================== ##
+
+SELECT *
+FROM products, otras_tablas
+WHERE product_id IN
+		(SELECT product_id
+		FROM stocks
+		WHERE quantity > 25) 
+
+## ==================== USANDO EXISTS =========================== ##
+
+SELECT product_name
+from products
+WHERE exists
+(SELECT *
+FROM brands
+WHERE 2.*conectamos aqui las tablas* products.brand_id = brands.brand_id 3.*agregamos AND* 1. product_name LIKE '%Trek%')
+
+## ==================== USANDO IN #2 =========================== ##
+
+SELECT *
+FROM tabla1, tabla2
+WHERE tabla_id = tabla_id 
+AND tabla1.columna IN
+		(Consulta con SELECT)
+
+## Si vas a hacer varias subconsultas, siempre empieza por la mas profunda; de adentro hacia afuera. Todo va a ir llevando paréntesis.
+Es útil si solo necesitas las columnas de products y no requieres ningún dato de stocks.
+Sin IN, combina y muestra las dos tablas. Con IN solo muestra las de la izquierda.
+Devuelven los mismos datos, pero:
+Si solo necesitas filtrar productos sin datos adicionales de stocks, usa el IN, que puede ser más sencillo y eficiente.
+Si necesitas acceder a campos de ambas tablas en el resultado, usa el JOIN para tener flexibilidad y acceso a más datos.
+
+=============== EJEMPLOS ==============================
+
+SELECT order_id
+FROM sales					CONSULTA 3
+WHERE product_name IN
+
+(SELECT product_name
+FROM products				CONSULTA 2
+WHERE product_id IN
+
+(SELECT product_id
+FROM stocks					CONSULTA 1
+WHERE quantity > 25)
+
+)
+AND order_total > 1500
+							Todo coincide en WHERE IN con el SELECT precedente (claves de conexion)
+
+
+
+
+SELECT order_id
+FROM sales					
+WHERE product_name IN
+
+(SELECT product_name
+FROM products				
+WHERE list_price >
+
+(SELECT AVG(list_price)
+FROM stocks )
+
+)
+
+AND order_id > 25
+
+Si tuvieras otro selector junto COUNT(order_id) por ejemplo order_date,
+recuerda que al tener agregadores SE AGRUPA el no agregador y se usa HAVING como where para agregadores.
+
+## =========================== OPERADORES EN SUBCONSULTAS ====================================== ##
+
+SELECT *
+FROM products					Selecciona el precio que sea mayor o igual al de la consulta de abajo...
+WHERE price >= 					
+(SELECT MAX(price) FROM discounts); Selecciona el precio maximo de...
+
+
+SELECT *
+FROM products					Selecciona el precio mas alto de...
+WHERE price >= ALL					
+(SELECT price FROM discounts); 		Selecciona los precios de...
+
+
+
+
+

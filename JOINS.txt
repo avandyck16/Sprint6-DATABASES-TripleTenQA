@@ -1,0 +1,39 @@
+Combinar tablas con JOINS. Se muestran todas las filas que se soliciten con el filtrado.
+JOINS para buscar y mostrar coincidencias, y SUBQUERIES para filtrar resultados de varias tablas.
+ver los datos de varias tablas lado a lado y en subconsultas cuando necesites usar otra tabla para definir o filtrar tus resultados.
+
+
+## ================================= Joins. UNIR EN WHERE ================================= ##
+
+SELECT	T1.columna, T2.columna 
+FROM	T1, T2
+WHERE	T1.columnaPK = T2.columnaPK
+
+## ================================= Opcion 2 UNIR EN FROM ================================= ##
+
+SELECT	T1.columna, T2.columna 
+FROM	T1 JOIN T2
+ON		T1.columnaPK = T2.columnaPK
+WHERE 	quantity > 25
+
+## ================================= Agregar más filtros ================================= ##
+
+2) Búsqueda directa (Más eficiente), conectas primero las tablas y luego aplicas los filtros.
+	Puedes conectar todas las tablas necesarias.
+	Se muestran todas las filas de todas las tablas que cumplan la condicion.
+
+SELECT 	T1.columna, T2.columna 
+FROM 	T1 JOIN T2
+ON 		T1.columnaPK = T2.columnaPK
+WHERE 	clientes.ciudad = 'Madrid' 
+AND 	pedidos.total = 200
+AND 	clientes.edad > 30
+AND 	pedidos.fecha BETWEEN '2023-01-01' AND '2023-12-31';
+
+
+
+
+SELECT product_name
+FROM products JOIN brands
+ON products.brand_id = brands.brand_id
+WHERE products.product_name LIKE '%Trek%'
